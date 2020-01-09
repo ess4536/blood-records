@@ -10,12 +10,15 @@
 
         <title>{% block title %}{% endblock %}</title>
         
-        <!-- Bootstrap core css -->
-        <link href="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}" rel="stylesheet">
-        
-        <!-- Custom fonts tor this template -->
-        <link href="https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900|Lato&display=swap" rel="stylesheet">
+        <!-- Font Awesome Icons -->
+        <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+
+        <!-- Google Fonts -->
+        <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet">
+        <link href='https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic' rel='stylesheet' type='text/css'>
+
+        <!-- Plugin CSS -->
+        <link href="{% static 'vendor/magnific-popup/magnific-popup.css' %}" rel="stylesheet">
 
         <!-- Custom style for this template -->
         <link href="{% static 'css/creative.min.css' %}" rel="stylesheet">
@@ -26,11 +29,11 @@
         {% block head %}{% endblock %}
     </head>
     
-    <body>
+    <body id="page-top">
         <div id="wrapper">
             <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNav"">
-                <div cladd="container">
-                    <a class="navbar-brand js-scroll-trigger" href="{% urls 'record:index' %}">Liner records</a>
+                <div class="container">
+                    <a class="navbar-brand js-scroll-trigger" href="{% url 'record:index' %}">Liner Records</a>
                     <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
@@ -64,7 +67,13 @@
             <!-- Bootstrap core JavaScript -->
             <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
             <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+            <!-- Plugin JavaScript -->
+            <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+            <script src="{% static 'vendor/magnific-popup/jquery.magnific-popup.min.js' %}"></script>
+
+            <!-- Custom scripts for this template -->
+            <script src="{% static 'js/creative.min.js' %}"></script>
         </div>
-        <h1>Hello</h1>
     </body>
 </html>
