@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from django.contrib.messages import constants as messages
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -39,6 +40,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'record.apps.RecordConfig',
+    'accounts.apps.AccountsConfig',
+
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
 ]
 
 MIDDLEWARE = [
@@ -109,47 +115,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # logging setting
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-
-#     # Logger setting
-#     'loggers': {
-#         # Django
-#         'django': {
-#             'handlers': ['console'],
-#             'level': 'INFO',
-#         },
-
-#         # record_app
-#         'record': {
-#             'handlers': ['console'],
-#             'level': 'DEBUG',
-#         },
-#     },
-
-#     # handlers
-#     'handlers': {
-#         'console': {
-#             'level': 'DEBUG',
-#             'class': 'logging.StreamHandler',
-#             'formatter': 'dev',
-#         },
-#     },
-
-#     # formatter
-#     'formatter': {
-#         'dev': {
-#             'format': '\t'.join([
-#                 '%(asctime)s',
-#                 '[%(levelname)s]',
-#                 '%(pathname)s(Line:%(lineno)d)',
-#                 '%(message)s',
-#             ])
-#         },
-#     },
-# }
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -215,4 +180,25 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
+)
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+MESSAGE_TAGS = {
+    messages.ERROR: 'alert alert-danger',
+    messages.WARNING: 'alert alert-warning',
+    messages.SUCCESS: 'alert alert-success',
+    messages.INFO: 'alert alert-info',
+}
+
+
+AUTH_USER_MODEL = 'accounts.CustomUser'
+
+# django-allauthで利用するdjango.contrb.sitesを使うためにサイト識別用IDを設定
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = (
+    'allauth.account.auth_backends.AuthenticatnoBackend',
+    #一般ユーザ用(メールアドレス認証)
 )
