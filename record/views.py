@@ -35,8 +35,8 @@ class InquiryView(generic.FormView):
 
 class RecordListView(LoginRequiredMixin, generic.ListView):
     model = Record
-    Template_name = 'record_list.html'
+    template_name = 'record_list.html'
 
     def get_queryset(self):
-        records = Record.objects.fillter(user=self.request.user).order_by('-create_at')
+        records = Record.objects.filter(user=self.request.user).order_by('-create_at')
         return records
