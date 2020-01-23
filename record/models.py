@@ -6,8 +6,8 @@ class Category(models.Model):
     """ カテゴリーモデル """
 
     sheet = models.ForeignKey('Sheet', verbose_name="シートID", on_delete=models.PROTECT)
-    category_name = models.TextField(verbose_name="カテゴリー名", blank=True)
-    axis = models.TextField(verbose_name="軸変数")
+    category_name = models.TextField(verbose_name="カテゴリー名", blank=True, max_length=30)
+    axis = models.TextField(verbose_name="軸変数", max_length=10)
     upper = models.FloatField(verbose_name="上限値", null=True)
     lower = models.FloatField(verbose_name="下限値", null=True)
 
@@ -20,7 +20,7 @@ class Category(models.Model):
 class Sheet(models.Model):
     """ シートモデル """
 
-    sheet_name = models.TextField(verbose_name="シート名", blank=True)
+    sheet_name = models.TextField(verbose_name="シート名", blank=True, max_length=30)
     create_at = models.DateTimeField(verbose_name="作成日時", auto_now_add=True)
     update_at = models.DateTimeField(verbose_name="更新日時", auto_now_add=True)
 
@@ -42,6 +42,3 @@ class Record(models.Model):
 
     class Meta:
         verbose_name_plural = 'Record'
-
-    def __str__(self):
-        return self.value
