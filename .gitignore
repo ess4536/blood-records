@@ -140,3 +140,6 @@ vendor/
 #accounts
 openid/
 socialaccount
+
+#migration
+migrations/
