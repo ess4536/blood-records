@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}記録一覧 | Liner Records{% endblock %}
+{% block active_record_list %}active{% endblock %}
+
+{% block head %}
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+{% endblock %}
+
+{% block contents %}
+<div class="container">
+    <div class="row">
+        <div class="my-div-style">
+            <a href="#" class="btn btn-primary">新規作成</a>
+            <div style="position:relative; top:60px; left:60px; width:500px; height:500px;">
+                <canvas id="line-graph"></canvas>
+                <script>
+                    var config = {
+                    type: 'line',
+                    data: {
+                        datasets: [{
+                            data: [
+                                {% for record in record_list %}
+                                    {{ record.value }},
+                                {% endfor %}
+                                ],
+
+//                            backgroundColor: [
+//                                '#696969', '#808080',
+//                            ],
+                            borderColor:
+                                'rgba(0, 128, 128, 0.5)',
+                            label: 'Record',
+                            fill: false
+                        }],
+                        labels: [
+                            {% for date in record_list %}
+                                '{{ date.date }}',
+                            {% endfor %}
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    suggestedMax: 5,
+                                    suggestedMin: 0,
+                                    stepSize: 1,
+                                }
+                            }]
+                        }
+                    }
+                    };
+
+                    window.onload = function() {
+                    var ctx = document.getElementById('line-graph').getContext('2d');
+                    window.myPie = new Chart(ctx, config);
+                    };
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
