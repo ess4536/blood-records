@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 
 settings.py
-#Bootstroap
+# Bootstroap
 img/
 creative.css
 creative.min.css
@@ -137,9 +137,11 @@ creative.js
 creative.min.js
 vendor/
 
-#accounts
+# accounts
 openid/
 socialaccount
+django-allauth/
 
-#migration
+# migration
 migrations/
+
