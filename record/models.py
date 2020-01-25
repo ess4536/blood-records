@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime
 from accounts.models import CustomUser
 
 # Create your models here.
@@ -37,8 +38,7 @@ class Record(models.Model):
     category = models.ForeignKey('Category', verbose_name="カテゴリーID", on_delete=models.PROTECT)
     sheet = models.ForeignKey('Sheet', verbose_name="シートID", on_delete=models.PROTECT)
     value = models.FloatField(verbose_name="値")
-    create_at = models.DateTimeField(verbose_name="作成日時", auto_now_add=True)
-    update_at = models.DateTimeField(verbose_name="更新日時", auto_now_add=True)
+    date = models.DateField(verbose_name="日付", default=datetime.now)
 
     class Meta:
         verbose_name_plural = 'Record'
