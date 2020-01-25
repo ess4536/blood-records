@@ -38,5 +38,5 @@ class RecordListView(LoginRequiredMixin, generic.ListView):
     template_name = 'record_list.html'
 
     def get_queryset(self):
-        records = Record.objects.filter(user=self.request.user).order_by('-create_at')
-        return records
+        queryset = Record.objects.filter(user=self.request.user).order_by('date')
+        return queryset
