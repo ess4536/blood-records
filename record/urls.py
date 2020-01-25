@@ -6,6 +6,7 @@ app_name = 'record'
 urlpatterns = [
     path('', views.IndexView.as_view(), name="index"),
     path('inquiry/', views.InquiryView.as_view(), name="inquiry"),
-    path('record-list/', views.RecordListView.as_view(), name="record_list")
+    path('record-list/', views.RecordListView.as_view(), name="record_list"),
+    path('record-detail/<int:pk>', views.RecordDetailView.as_views(), name="record_detail"),
 ]
 
