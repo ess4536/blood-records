@@ -33,21 +33,34 @@
         <div id="wrapper">
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top py-3" id="mainNav"">
                 <div class="container">
-                    <a class="navbar-brand js-scroll-trigger" href="{% url 'record:index' %}">Liner Records</a>
+                    <a class="navbar-brand" href="{% url 'record:index' %}">Liner Records</a>
                     <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="navbarResponsive">
-                        <ul class="navbar-nav ml-auto my-2 my-lg-0">
+                        <ul class="navbar-nav mr-auto my-2 my-rg-0">
                             <li class="nav-item {% block active_inquiry %}{% endblock %}">
-                                <a class="nav-link js-scroll-trigger" href="{% url 'record:inquiry' %}">INQUIRY</a>
+                                <a class="nav-link" href="{% url 'record:inquiry' %}">INQUIRY</a>
                             </li>
+                        {% if user.is_authenticated %}
+                            <li class="nav-item {% block record_list %}{% endblock %}">
+                                <a class="nav-link" href="{% url 'record:record_list' %}">RECORD LIST</a>
+                            </li>
+                        {% endif %}
+                        </ul>
+                        <ul class="navbar-nav ml-auto my-2 my-lg-0">
+                        {% if user.is_authenticated %}
+                            <li class="nav-item {% block active_logout %}{% endblock %}">
+                                <a class="nav-link" href="{% url 'account_logout' %}">Log Out</a>
+                            </li>
+                        {% else %}
                             <li class="nav-item {% block active_signup %}{% endblock %}">
-                                <a class="nav-link js-scroll-trigger" href="{% url 'account_signup' %}">Sign Up</a>
+                                <a class="nav-link" href="{% url 'account_signup' %}">Sign Up</a>
                             </li>
                             <li class="nav-item {% block active_login %}{% endblock %}">
-                                <a class="nav-link js-scroll-trigger" href="{% url 'account_login' %}">Log In</a>
+                                <a class="nav-link" href="{% url 'account_login' %}">Log In</a>
                             </li>
+                        {% endif %}
                         </ul>
                     </div>
                 </div>
