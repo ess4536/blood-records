@@ -214,7 +214,7 @@ ACCOUNT_EMAIL_VERIFICAION = 'mandatory'
 ACCOUNT_EMAIL_REQUIRED = False
 
 #ログイン/ログアウト後の遷移先を設定
-LOGIN_REDIRECT_URL = 'record:index'
+LOGIN_REDIRECT_URL = 'record:record_list'
 ACCOUNT_LOGOUT_REDIRECT_URL = 'account_login'
 
 #ログアウトリンクのクリック一発でログアウトする設定
