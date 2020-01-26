@@ -40,3 +40,7 @@ class RecordListView(LoginRequiredMixin, generic.ListView):
     def get_queryset(self):
         queryset = Record.objects.filter(user=self.request.user).order_by('date')
         return queryset
+
+class RecordDetailView(generic.DetailView):
+    model = Record
+    template_name = 'record_detail.html'
