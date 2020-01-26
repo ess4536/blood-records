@@ -16,7 +16,7 @@ class Category(models.Model):
         verbose_name_plural ="Category"
 
     def __str__(self):
-        return self.category_name
+        return self.name
 
 class Sheet(models.Model):
     """ シートモデル """
@@ -29,7 +29,7 @@ class Sheet(models.Model):
         verbose_name_plural = "Sheet"
     
     def __str__(self):
-        return self.sheet_name
+        return self.name
 
 class Record(models.Model):
     """ レコードモデル """
