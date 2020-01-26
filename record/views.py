@@ -2,7 +2,7 @@ import logging
 from django.urls import reverse_lazy
 from django.shortcuts import render
 from django.views import generic
-from .forms import InquiryForm
+from .forms import InquiryForm, RecordCreateForm
 from .models import Record
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -44,3 +44,20 @@ class RecordListView(LoginRequiredMixin, generic.ListView):
 class RecordDetailView(generic.DetailView):
     model = Record
     template_name = 'record_detail.html'
+
+class RecordCreateView(LoginRequiredMixin, generic.CreateView):
+    model = Record
+    template_name = 'record_create.html'
+    form_class = RecordCreateForm
+    success_url = reverse_lazy('record:record_list')
+
+    def form_valid(self, form):
+        record = form.save(commit=False)
+        record.user = self.request.user
+        record.save()
+        messages.success(self.request, '記録を作成しました')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "記録の作成に失敗しました")
+        return super().form_invalid(form)

@@ -8,5 +8,6 @@ urlpatterns = [
     path('inquiry/', views.InquiryView.as_view(), name="inquiry"),
     path('record-list/', views.RecordListView.as_view(), name="record_list"),
     path('record-detail/<int:pk>', views.RecordDetailView.as_view(), name="record_detail"),
+    path('record-create/', views.RecordCreateView.as_view(), name="record_create"),
 ]
 

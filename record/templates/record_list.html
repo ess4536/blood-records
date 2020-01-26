@@ -12,7 +12,7 @@
 <div class="container">
     <div class="row">
         <div class="my-div-style">
-            <a href="#" class="btn btn-primary">新規作成</a>
+            <a href="{% url 'record:record_create' %}" class="btn btn-primary">新規作成</a>
             <div style="position:relative; top:60px; left:60px; width:500px; height:500px;">
                 <canvas id="line-graph"></canvas>
                 <script>
@@ -31,7 +31,7 @@
 //                            ],
                             borderColor:
                                 'rgba(0, 128, 128, 0.5)',
-                            label: 'Record',
+                            label: '{{ category.category_name }}',
                             fill: false
                         }],
                         labels: [
