@@ -66,3 +66,19 @@ class RecordCreateView(LoginRequiredMixin, generic.CreateView):
     def form_invalid(self, form):
         messages.error(self.request, "記録の作成に失敗しました")
         return super().form_invalid(form)
+
+class RecordUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Record
+    template_name = 'record_update.html'
+    form_class = RecordCreateForm
+
+    def get_success_url(self):
+        return reverse_lazy('record:record_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, '記録を更新しました')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.success(self.request, '記録の更新に失敗しました')
+        return super().form_invalid(form)
