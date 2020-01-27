@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from django.shortcuts import render
 from django.views import generic
 from .forms import InquiryForm, RecordCreateForm
-from .models import Record
+from .models import Record, Category
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -41,9 +41,14 @@ class RecordListView(LoginRequiredMixin, generic.ListView):
         queryset = Record.objects.filter(user=self.request.user).order_by('date')
         return queryset
 
-class RecordDetailView(generic.DetailView):
-    model = Record
+class RecordDetailView(LoginRequiredMixin, generic.ListView):
+    model = Category
     template_name = 'record_detail.html'
+
+def RecordDetailNextView(request, pk):
+    record_list = Record.objects.filter(category=pk).order_by('-date')
+    context = {'record_list': record_list}
+    return render(request, 'record_detail_next.html', context)
 
 class RecordCreateView(LoginRequiredMixin, generic.CreateView):
     model = Record
