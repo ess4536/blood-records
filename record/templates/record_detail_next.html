@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}記録詳細 | Liner Records{% endblock %}
+{% block active_record_detail %}active{% endblock %}
+
+{% block contents %}
+<div class="container">
+    <div class="row">
+        <div class="my-div-style">
+            <h1>Detail_next</h1>
+            <p>{{ record.category.name }}</p>
+            <table>
+            <tr>
+                <td>Date</td>
+                <td>Value</td>
+            </tr>
+            {% for record in record_list %}
+            <tr>
+                <td>{{ record.date }}</td>
+                <td>{{ record.value }}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
