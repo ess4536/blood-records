@@ -1,5 +1,5 @@
 from django import forms
-from .models import Record
+from .models import Record, Category
 from django.core.mail import EmailMessage
 
 class InquiryForm(forms.Form):
@@ -46,9 +46,24 @@ class InquiryForm(forms.Form):
 class RecordCreateForm(forms.ModelForm):
     class Meta:
         model = Record
-        fields = ('category', 'date', 'value',)
+        fields = ('sheet', 'category', 'date', 'value',)
 
-        def __init__(self, *args, **kwargs):
-                super().__init__(*args, **kwargs)
-                for field in self.fields.values():
-                    field.widget.attrs['class'] = 'form-control'
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'
+
+class CategoryCreateForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ('name', 'description', 'axis', 'upper', 'lower')
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'col-sm-8'}),
+            'description': forms.TextInput(attrs={'class': 'col-sm-8'}),
+            'axis': forms.TextInput(attrs={'class': 'col-sm-8'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'

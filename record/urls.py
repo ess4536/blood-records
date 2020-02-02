@@ -12,5 +12,7 @@ urlpatterns = [
     path('record-create/', views.RecordCreateView.as_view(), name="record_create"),
     path('record-update/<int:pk>/', views.RecordUpdateView.as_view(), name="record_update"),
     path('record-delete/<int:pk>/', views.RecordDeleteView.as_view(), name="record_delete"),
+    path('category-create/', views.CategoryCreateView.as_view(), name="category_create"),
+    path('user_search/', views.UserSearchView, name="user_search"),
 ]
 
