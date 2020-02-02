@@ -9,11 +9,11 @@
         <div class="my-div-style">
             <form action="" method="post">
             {% csrf_token %}
-                <table class="table">
-                    {{form.as_table}}
-                </table>
-                <button class="btn btn-primary">更新</button>
-                <a class="btn btn-secondary" href="{% url 'record:record_detail_next' object.category.pk %}">戻る</a>
+                {{ form.as_table }}
+                <div class="mt-2">
+                    <button class="btn btn-primary">更新</button>
+                    <a class="btn btn-secondary" href="{% url 'record:record_detail_next' object.category.pk %}">戻る</a>
+                </div>
             </form>
         </div>
     </div>

@@ -33,7 +33,7 @@
         <div id="wrapper">
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top py-3" id="mainNav"">
                 <div class="container">
-                    <a class="navbar-brand" href="{% url 'record:index' %}">Liner Records</a>
+                    <a class="navbar-brand" href="{% url 'record:index' %}">Blood Records</a>
                     <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
@@ -48,6 +48,9 @@
                             </li>
                             <li class="nav-item {% block record_detail %}{% endblock %}">
                                 <a class="nav-link" href="{% url 'record:record_detail' %}">DETAIL</a>
+                            </li>
+                            <li class="nav-item {% block create %}{% endblock %}">
+                                <a class="nav-link" href="{% url 'record:record_create' %}">CREATE</a>
                             </li>
                         {% endif %}
                         </ul>
@@ -90,7 +93,7 @@
             {% block contents %}{% endblock %}
 
             <!-- Fotter -->
-            <footer class="bg-light py-5">
+            <footer class="bg-light py-3">
                 <div class="container">
                     <div class="small text-center text-muted">Copyright &copy; 2019 - Liner records</div>
                 </div>
@@ -105,7 +108,18 @@
             <script src="{% static 'vendor/magnific-popup/jquery.magnific-popup.min.js' %}"></script>
 
             <!-- Custom scripts for this template -->
-            <script src="{% static 'js/creative.min.js' %}"></script>
+            {% comment %} <script src="{% static 'js/creative.min.js' %}"></script> {% endcomment %}
+
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+            
+            <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+
+            {% block extrajs %}{% endblock%}
+            <script>
+            $(document).ready(function(){
+                {% block jquery %}{% endblock %}
+            })
+            </script>
         </div>
     </body>
 </html>

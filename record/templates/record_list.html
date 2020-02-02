@@ -4,55 +4,61 @@
 {% block active_record_list %}active{% endblock %}
 
 {% block head %}
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+{% endblock %}
+
+{% block extrajs %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 {% endblock %}
 
 {% block contents %}
 <div class="container">
     <div class="row">
         <div class="my-div-style">
-            <a href="{% url 'record:record_create' %}" class="btn btn-primary">新規作成</a>
+            <form action="{% url 'record:search' %}" method="post">
+                    <input class="form-control" type="text" maxlength="30">
+                    <input class="btn btn-secondary" type="submit" value="検索">
+            </form>
             <div style="position:relative; top:60px; left:60px; width:500px; height:500px;">
                 <canvas id="line-graph"></canvas>
                 <script>
                     var config = {
                     type: 'line',
                     data: {
-                        datasets: [{
-                            data: [
-                                {% for record in record_list %}
-                                    {{ record.value }},
-                                {% endfor %}
-                                ],
-
-//                            backgroundColor: [
-//                                '#696969', '#808080',
-//                            ],
-                            borderColor:
-                                'rgba(0, 128, 128, 0.5)',
-                            label: '{{ category.name }}',
-                            fill: false
-                        }],
                         labels: [
-                            {% for date in record_list %}
-                                '{{ date.date }}',
+                            {% for today in date %}
+                                '{{ today }}',
                             {% endfor %}
-                        ]
+                        ],
+                        datasets: [
+                        {% for name in cate_name %}
+                        {
+                            label: '{{ name }}',
+                            data: [
+                                {% for record in queryset %}
+                                    {% if record.category.name == name %}
+                                        {{ record.value }},
+                                    {% endif %}
+                                {% endfor %}
+                            ],
+                            {% if forloop.first %}
+                                borderColor: 'rgba(0, 128, 128, 0.5)',
+                            {% elif forloop.counter == 2  %}
+                                borderColor: 'rgba(128, 0, 128, 0.5)',
+                            {% else %}
+                                borderColor: 'rgba(0, 0, 128, 0.5)',
+                            {% endif %}
+                            fill: false
+                        },
+                        {% endfor %}
+                        ],
                     },
                     options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    suggestedMax: 5,
-                                    suggestedMin: 0,
-                                    stepSize: 1,
-                                }
+                        annotation: {
+                            annotations: [{
                             }]
                         }
                     }
                     };
-
                     window.onload = function() {
                     var ctx = document.getElementById('line-graph').getContext('2d');
                     window.myPie = new Chart(ctx, config);

@@ -7,9 +7,8 @@
 <div class="container">
     <div class="row">
         <div class="my-div-style">
-            <h1>Detail_next</h1>
             <p>{{ record.category.name }}</p>
-            <table>
+            <table class="table">
             <tr>
                 <td>Date</td>
                 <td>Value</td>
@@ -18,8 +17,8 @@
             <tr>
                 <td>{{ record.date }}</td>
                 <td>{{ record.value }}</td>
-                <td></td>
-                <td></td>
+                <td><a href="{% url 'record:record_update' record.pk %}">編集</a></td>
+                <td><a href="{% url 'record:record_delete' record.pk %}">削除</a></td>
             </tr>
             {% endfor %}
             </table>

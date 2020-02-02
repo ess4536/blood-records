@@ -7,11 +7,15 @@
 <div class="container">
     <div class="row">
         <div class="my-div-style">
-            <h1>Detail</h1>
             <p>Category</p>
+            <table class="table">
             {% for category in category_list %}
-                <a href="{% url 'record:record_detail_next' category.pk %}">{{ category.name }}</a><br>
+                <tr>
+                    <td><a class="" href="{% url 'record:record_detail_next' category.pk %}">{{ category.name }}</a></td>
+                    <td>{{ category.description }}</td>
+                </tr>
             {% endfor %}
+            </table>
         </div>
     </div>
 </div>
