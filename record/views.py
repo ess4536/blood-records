@@ -3,8 +3,10 @@ from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.shortcuts import render
 from django.views import generic
+from django.db.models import Q
 from .forms import InquiryForm, RecordCreateForm, CategoryCreateForm
 from .models import Record, Category
+from accounts.models import CustomUser
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -118,3 +120,16 @@ class CategoryCreateView(LoginRequiredMixin, generic.CreateView):
     def form_invalid(self, form):
         messages.error(self.request, 'カテゴリの作成に失敗しました')
         return super().form_invalid(form)
+
+class Share(LoginRequiredMixin, generic.ListView):
+    model = CustomUser
+    template_name = 'share.html'
+
+    def get_queryset(self):
+        q_word = self.request.GET.get('query')
+
+        if q_word:
+            object_list = CustomUser.objects.filter(Q(username__icontains=q_word))
+        else:
+            object_list = CustomUser.objects.all()
+        return object_list
