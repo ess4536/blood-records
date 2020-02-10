@@ -7,3 +7,14 @@ class CustomUser(AbstractUser):
 
     class Meta:
         verbose_name_plural = 'CustomUser'
+
+    def get_followers(self):
+        relations = Relationship.objects.filter(follow=self)
+        return [relation.follower for relation in relations]
+
+class Relationship(models.Model):
+    user = models.ForeignKey(CustomUser, verbose_name="ユーザ", related_name="user", on_delete=models.PROTECT)
+    follow = models.ForeignKey(CustomUser, verbose_name="フォロー", related_name="follow", on_delete=models.PROTECT)
+
+    def __str__(self):
+        return self.user.username
