@@ -1,12 +1,12 @@
 import logging
 from django.http import JsonResponse
 from django.urls import reverse_lazy
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
 from django.db.models import Q
-from .forms import InquiryForm, RecordCreateForm, CategoryCreateForm
-from .models import Record, Category
-from accounts.models import CustomUser
+from .forms import InquiryForm, RecordCreateForm, CategoryCreateForm, SheetCreateForm
+from .models import Record, Category, Sheet
+from accounts.models import CustomUser, Relationship
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -40,17 +40,43 @@ class InquiryView(generic.FormView):
         return super(InquiryView, self).form_valid(form)
 
 class RecordListView(LoginRequiredMixin, generic.ListView):
-    model = Record
+    model = Record, CustomUser, Relationship
     template_name = 'record_list.html'
 
     def get(self, request, *args, **kwargs):
-        queryset = Record.objects.filter(user=self.request.user).order_by('category')
-        date = Record.objects.values_list('date', flat=True).order_by('date').distinct()
-        cate_name = Category.objects.values_list('name', flat=True).distinct()
+        queryset = Record.objects.filter(user=self.request.user).order_by('date')
+        date = Record.objects.filter(user=self.request.user).values_list('date', flat=True).order_by('date').distinct()
+        cate_list = Category.objects.filter(user=self.request.user)
+        sheet_list = Sheet.objects.filter(user=self.request.user)
+        relation_list = Relationship.objects.filter(user=self.request.user)
+        follow = Relationship.objects.filter(user=self.request.user).values_list('follow',flat=True )
+        
+        if follow:
+            for follow in follow:
+                follow_record = Record.objects.filter(user=follow).order_by('date')
+                follow_cate = Category.objects.filter(user=follow)
+                follow_date = Record.objects.filter(user=follow).values_list('date', flat=True).order_by('date').distinct()
+        else:
+            follow_record = ""
+            follow_cate = ""
+
+        q_word = self.request.GET.get('query')
+
+        if q_word:
+            object_list = CustomUser.objects.filter(Q(username__icontains=q_word))
+        else:
+            object_list = CustomUser.objects.all()
+        
         context = {
             'queryset': queryset,
             'date': date,
-            'cate_name': cate_name,
+            'cate_list': cate_list,
+            'sheet_list': sheet_list,
+            'relation_list': relation_list,
+            'follow_record': follow_record,
+            'follow_cate': follow_cate,
+            'follow_date': follow_date,
+            'object_list': object_list,
         }
         return render(request, 'record_list.html', context)
 
@@ -58,8 +84,15 @@ class RecordDetailView(LoginRequiredMixin, generic.ListView):
     model = Category
     template_name = 'record_detail.html'
 
+    def get(self, request, *args, **kwargs):
+        category_list = Category.objects.filter(user=self.request.user)
+        context = {
+            'category_list': category_list
+        }
+        return render(request, 'record_detail.html', context)
+
 def RecordDetailNextView(request, pk):
-    record_list = Record.objects.filter(category=pk).order_by('-date')
+    record_list = Record.objects.filter(user=request.user, category=pk).order_by('-date')
     context = {'record_list': record_list}
     return render(request, 'record_detail_next.html', context)
 
@@ -113,6 +146,7 @@ class CategoryCreateView(LoginRequiredMixin, generic.CreateView):
 
     def form_valid(self, form):
         category = form.save(commit=False)
+        category.user = self.request.user
         category.save()
         messages.success(self.request, 'カテゴリを作成しました')
         return super().form_valid(form)
@@ -121,9 +155,29 @@ class CategoryCreateView(LoginRequiredMixin, generic.CreateView):
         messages.error(self.request, 'カテゴリの作成に失敗しました')
         return super().form_invalid(form)
 
+class SheetCreateView(LoginRequiredMixin, generic.CreateView):
+    model = Sheet
+    template_name = 'sheet_create.html'
+    form_class = SheetCreateForm
+    success_url = reverse_lazy('record:record_list')
+
+    def form_valid(self, form):
+        sheet = form.save(commit=False)
+        sheet.user = self.request.user
+        sheet.save()
+        messages.success(self.request, 'シートを作成しました')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'シートの作成に失敗しました')
+        return super().form_invalid(form)
+
 class Share(LoginRequiredMixin, generic.ListView):
     model = CustomUser
     template_name = 'share.html'
+
+    slug_field = 'username'
+    slug_url_kwarg = 'username'
 
     def get_queryset(self):
         q_word = self.request.GET.get('query')
@@ -133,3 +187,34 @@ class Share(LoginRequiredMixin, generic.ListView):
         else:
             object_list = CustomUser.objects.all()
         return object_list
+
+    def get_context_data(self, **kwargs):
+        context = super(Share, self).get_context_data(**kwargs)
+        username = self.kwargs['username']
+        context['username'] = username
+        context['follow'] = Relationship.objects.filter(user__username=username).count()
+        context['user'] = Relationship.objects.filter(follow__username=username).count()
+
+        if username is not self.request.user:
+            result = Relationship.objects.filter(user__username=self.request.user).filter(follow__username=username)
+            context['relation'] = True if result else False
+        return context
+
+def FollowView(request, *args, **kwargs):
+    try:
+        user = CustomUser.objects.get(username=request.user.username)
+        follow = CustomUser.objects.get(username=kwargs['username'])
+    except CustomUser.DoesNotExist:
+        messages.warning(request, '{}は存在しません'.format(kwargs['username']))
+        return redirect('record:index')
+    if user == follow:
+        messages.warning(request, 'フォローできません')
+    else:
+        created = Relationship.objects.get_or_create(user=user, follow=follow)
+
+        if (created):
+            messages.success(request, 'フォローしました')
+        else:
+            messages.warning(request, 'すでにフォローしています')
+
+    return redirect('record:record_list')

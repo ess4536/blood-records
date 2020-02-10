@@ -13,6 +13,10 @@ urlpatterns = [
     path('record-update/<int:pk>/', views.RecordUpdateView.as_view(), name="record_update"),
     path('record-delete/<int:pk>/', views.RecordDeleteView.as_view(), name="record_delete"),
     path('category-create/', views.CategoryCreateView.as_view(), name="category_create"),
-    path('user_search/', views.UserSearchView, name="user_search"),
+    path('category-update/<int:pk>', views.CategoryUpdateView.as_view(), name="category_update"),
+    path('sheet-create/', views.SheetCreateView.as_view(), name="sheet_create"),
+#    path('share/', views.Share.as_view(), name="share"),
+#    path('share/<int:pk>/', views.ShareAccount.as_view(), name="share_account"),
+    path('follow/<slug:username>/', views.FollowView, name="follow"),
 ]
 

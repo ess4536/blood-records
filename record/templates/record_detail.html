@@ -11,8 +11,10 @@
             <table class="table">
             {% for category in category_list %}
                 <tr>
-                    <td><a class="" href="{% url 'record:record_detail_next' category.pk %}">{{ category.name }}</a></td>
+                    <td><a href="{% url 'record:record_detail_next' category.pk %}">{{ category.name }}</a></td>
                     <td>{{ category.description }}</td>
+                    <td><a href="{% url 'record:category_update' category.pk %}">編集</a></td>
+                    <td><a href="#">削除</a></td>
                 </tr>
             {% endfor %}
             </table>

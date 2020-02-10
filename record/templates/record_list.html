@@ -2,69 +2,229 @@
 {% load static %}
 {% block title %}記録一覧 | Liner Records{% endblock %}
 {% block active_record_list %}active{% endblock %}
+{% block user %}active{% endblock %}
+{% block username %}Hellow {{ user }} !{% endblock %}
 
 {% block head %}
 {% endblock %}
 
 {% block extrajs %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <script src ="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.7/chartjs-plugin-annotation.min.js"></script>
 {% endblock %}
+
 
 {% block contents %}
 <div class="container">
     <div class="row">
         <div class="my-div-style">
-            <form action="{% url 'record:search' %}" method="post">
-                    <input class="form-control" type="text" maxlength="30">
-                    <input class="btn btn-secondary" type="submit" value="検索">
-            </form>
-            <div style="position:relative; top:60px; left:60px; width:500px; height:500px;">
-                <canvas id="line-graph"></canvas>
-                <script>
-                    var config = {
-                    type: 'line',
-                    data: {
-                        labels: [
-                            {% for today in date %}
-                                '{{ today }}',
-                            {% endfor %}
-                        ],
-                        datasets: [
-                        {% for name in cate_name %}
-                        {
-                            label: '{{ name }}',
-                            data: [
-                                {% for record in queryset %}
-                                    {% if record.category.name == name %}
-                                        {{ record.value }},
-                                    {% endif %}
-                                {% endfor %}
-                            ],
-                            {% if forloop.first %}
-                                borderColor: 'rgba(0, 128, 128, 0.5)',
-                            {% elif forloop.counter == 2  %}
-                                borderColor: 'rgba(128, 0, 128, 0.5)',
-                            {% else %}
-                                borderColor: 'rgba(0, 0, 128, 0.5)',
-                            {% endif %}
-                            fill: false
-                        },
-                        {% endfor %}
-                        ],
-                    },
-                    options: {
-                        annotation: {
-                            annotations: [{
-                            }]
-                        }
-                    }
-                    };
-                    window.onload = function() {
-                    var ctx = document.getElementById('line-graph').getContext('2d');
-                    window.myPie = new Chart(ctx, config);
-                    };
-                </script>
+            <div class="float-right ml-lg-5 pl-lg-5">
+                <form action="" method="get">
+                {% csrf_token %}
+                    <div class="row">
+                        <input class="form-control col-8" type="text" name="query" value="{{ request.GET.query }}">
+                        <input class="btn btn-primary" type="submit" value="検索">
+                    </div>
+                </form>
+                {% for user in object_list %}
+                    <div class="row">
+                        {{ user.username }}
+                        <form action="{% url 'record:follow' user.username %}" method="post">
+                        {% csrf_token %}
+                            <input type="image" src="{% static 'img/star.svg' %}" alt="star" width="23" height="23">
+                        </form>
+                    </div>
+                {% endfor %}
             </div>
+            {% for sheet in sheet_list %}
+                <div class="float-left mt-lg-3 p-3">
+                        <h3 class="h3">{{ sheet.name }}</h3>
+                        <canvas id="line-graph{{ forloop.counter }}" width="700" height="300"></canvas>
+                </div>
+            {% endfor %}
+            {% for relation in relation_list %}
+                <div class="float-left mt-lg-3 p-3">
+                    <h3 class="h3">{{ relation.follow }}</h3>
+                    <canvas id="line-graph-follow{{ forloop.counter }}" width="700" height="300"></canvas>
+                </div>
+            {% endfor %}
+                <script>
+                    window.onload = function() {
+                    {% for sheet in sheet_list %}
+                        var ctx{{ forloop.counter }} = document.getElementById('line-graph{{ forloop.counter }}').getContext('2d');
+                        var myChart{{ forloop.counter }} = new Chart(ctx{{ forloop.counter }}, config{{ forloop.counter }});
+                    {% endfor %}
+                    {% if relation_list %}
+                        {% for relation in relation_list %}
+                            var ctx_follow{{ forloop.counter }} = document.getElementById('line-graph-follow{{ forloop.counter }}').getContext('2d');
+                            var myChart_follow{{ forloop.counter }} = new Chart(ctx_follow{{ forloop.counter }}, config_follow{{ forloop.counter }});
+                        {% endfor %}
+                    {% endif %}
+                    };
+                    var annotationColor = 'rgba(0, 255, 128, 0.2)';
+                    
+                    function removeBackgroundColor(chart, legendItem){
+                        {% for cate in cate_list %}
+                            if(legendItem.datasetIndex == {{ forloop.counter|add:"-1" }}){
+                                if(chart.annotation.elements['{{ forloop.counter|add:"-1" }}'] != null)
+                                    chart.annotation.elements['{{ forloop.counter|add:"-1" }}'].options.backgroundColor = 'rgba(0, 0, 0, 0)';
+                            }
+                        {% endfor %}
+                    }
+
+                    function putBackgroundColor(chart, legendItem){
+                        {% for cate in cate_list %}
+                        if(legendItem.datasetIndex == {{ forloop.counter|add:"-1" }}){
+                            if(chart.annotation.elements['{{ forloop.counter|add:"-1" }}'] != null)
+                                chart.annotation.elements['{{ forloop.counter|add:"-1" }}'].options.backgroundColor = annotationColor;
+                        }
+                        {% endfor %}
+                    }
+
+                    function onClick (e, legendItem) {
+                        var index = legendItem.datasetIndex;
+                        var ci = this.chart;
+                        var meta = ci.getDatasetMeta(index);
+
+                        meta.hidden = meta.hidden === null ? !ci.data.datasets[index].hidden : null;
+
+                        if(meta.hidden != null)
+                            removeBackgroundColor(ci, legendItem);
+                        else
+                            putBackgroundColor(ci, legendItem);
+                        
+                        ci.update();
+                    }
+                    {% for sheet in sheet_list %}
+                        var config{{ forloop.counter }} = {
+                            type: 'line',
+                            data: {
+                                labels: [
+                                    {% for today in date %}
+                                        '{{ today }}',
+                                    {% endfor %}
+                                ],
+                                datasets: [
+                                {% for cate in cate_list %}
+                                {% if cate.sheet.id == sheet.id %}
+                                {
+                                    label: '{{ cate.name }}',
+                                    data: [
+                                        {% for record in queryset %}
+                                            {% if record.category.name == cate.name %}
+                                                {{ record.value }},
+                                            {% endif %}
+                                        {% endfor %}
+                                    ],
+                                    {% if forloop.first %}
+                                        borderColor: 'rgba(0, 128, 128, 0.5)',
+                                    {% elif forloop.counter == 2  %}
+                                        borderColor: 'rgba(128, 0, 128, 0.5)',
+                                    {% elif forloop.counter == 3  %}
+                                        borderColor: 'rgba(0, 128, 0, 0.5)',
+                                    {% elif forloop.counter == 4  %}
+                                        borderColor: 'rgba(0, 0, 128, 0.5)',
+                                    {% else %}
+                                        borderColor: 'rgba(128, 128, 0, 0.5)',
+                                    {% endif %}
+                                    fill: false
+                                },
+                                {% endif %}
+                                {% endfor %}
+                                ],
+                            },
+                            options: {
+                                legend: {
+                                    onClick: onClick,
+                                },
+                                annotation: {
+                                    annotations: [
+                                    {% for cate in cate_list %}
+                                    {% if cate.sheet.id == sheet.id %}
+                                    {
+                                        id: "{{ forloop.counter|add:'-1' }}",
+                                        drawTime: 'afterDatasetsDraw', // overrides annotation.drawTime if set
+                                        type: 'box',
+                                        mode: 'horizontal',
+                                        yScaleID: 'y-axis-0',
+                                        yMax: {{ cate.upper }},
+                                        yMin: {{ cate.lower }},
+                                        backgroundColor: annotationColor,
+                                        borderColor: annotationColor,
+                                        borderWidth: 1,
+                                    },
+                                    {% endif %}
+                                    {% endfor %}
+                                    ]
+                                }
+                            }
+                        };
+                    {% endfor %}
+
+                    {% if relation_list %}
+                    {% for relation in relation_list %}
+                        var config_follow{{ forloop.counter }} = {
+                            type: 'line',
+                            data: {
+                                labels: [
+                                    {% for f_today in follow_date %}
+                                        '{{ f_today }}',
+                                    {% endfor %}
+                                ],
+                                datasets: [
+                                {% for f_cate in follow_cate %}
+                                {
+                                    label: '{{ f_cate.name }}',
+                                    data: [
+                                        {% for f_record in follow_record %}
+                                            {% if f_record.category.name == f_cate.name %}
+                                                {{ f_record.value }},
+                                            {% endif %}
+                                        {% endfor %}
+                                    ],
+                                    {% if forloop.first %}
+                                        borderColor: 'rgba(0, 128, 128, 0.5)',
+                                    {% elif forloop.counter == 2  %}
+                                        borderColor: 'rgba(128, 0, 128, 0.5)',
+                                    {% elif forloop.counter == 3  %}
+                                        borderColor: 'rgba(0, 128, 0, 0.5)',
+                                    {% elif forloop.counter == 4  %}
+                                        borderColor: 'rgba(0, 0, 128, 0.5)',
+                                    {% else %}
+                                        borderColor: 'rgba(128, 128, 0, 0.5)',
+                                    {% endif %}
+                                    fill: false
+                                },
+                                {% endfor %}
+                                ],
+                            },
+                            options: {
+                                legend: {
+                                    onClick: onClick,
+                                },
+                                annotation: {
+                                    annotations: [
+                                    {% for f_cate in follow_cate %}
+                                    {
+                                        id: "{{ forloop.counter|add:'-1' }}",
+                                        drawTime: 'afterDatasetsDraw', // overrides annotation.drawTime if set
+                                        type: 'box',
+                                        mode: 'horizontal',
+                                        yScaleID: 'y-axis-0',
+                                        yMax: {{ f_cate.upper }},
+                                        yMin: {{ f_cate.lower }},
+                                        backgroundColor: annotationColor,
+                                        borderColor: annotationColor,
+                                        borderWidth: 1,
+                                    },
+                                    {% endfor %}
+                                    ]
+                                }
+                            }
+                        };
+                    {% endfor %}
+                    {% endif %}
+                </script>
         </div>
     </div>
 </div>
