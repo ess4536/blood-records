@@ -59,6 +59,7 @@ class RecordListView(LoginRequiredMixin, generic.ListView):
         else:
             follow_record = ""
             follow_cate = ""
+            follow_date = ""
 
         q_word = self.request.GET.get('query')
 
@@ -153,6 +154,22 @@ class CategoryCreateView(LoginRequiredMixin, generic.CreateView):
 
     def form_invalid(self, form):
         messages.error(self.request, 'カテゴリの作成に失敗しました')
+        return super().form_invalid(form)
+
+class CategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Category
+    template_name = 'category_update.html'
+    form_class = CategoryCreateForm
+
+    def get_success_url(self):
+        return reverse_lazy('record:record_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'カテゴリーを更新しました')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.success(self.request, 'カテゴリーの更新に失敗しました')
         return super().form_invalid(form)
 
 class SheetCreateView(LoginRequiredMixin, generic.CreateView):
