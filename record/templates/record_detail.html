@@ -1,12 +1,22 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}記録詳細 | Liner Records{% endblock %}
+{% block title %}記録詳細 | Blood Records{% endblock %}
 {% block active_record_detail %}active{% endblock %}
 
 {% block contents %}
 <div class="container">
     <div class="row">
         <div class="my-div-style">
+            <p>Sheet</p>
+            <table class="table">
+            {% for sheet in sheet_list %}
+                <tr>
+                    <td>{{ sheet.name }}</td>
+                    <td><a href="{% url 'record:sheet_update' sheet.pk %}">編集</a></td>
+                    <td><a href="{% url 'record:sheet_delete' sheet.pk %}">削除</a></td>
+                </tr>
+            {% endfor %}
+            </table>
             <p>Category</p>
             <table class="table">
             {% for category in category_list %}
@@ -14,7 +24,7 @@
                     <td><a href="{% url 'record:record_detail_next' category.pk %}">{{ category.name }}</a></td>
                     <td>{{ category.description }}</td>
                     <td><a href="{% url 'record:category_update' category.pk %}">編集</a></td>
-                    <td><a href="#">削除</a></td>
+                    <td><a href="{% url 'record:category_delete' category.pk %}">削除</a></td>
                 </tr>
             {% endfor %}
             </table>

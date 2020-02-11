@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}記録更新 | Blood Records{% endblock %}
+{% block title %}シート更新 | Blood Records{% endblock %}
 {% block active_record_detail %}active{% endblock %}
 
 {% block contents %}
@@ -12,7 +12,7 @@
                 {{ form.as_table }}
                 <div class="mt-2">
                     <button class="btn btn-primary">更新</button>
-                    <a class="btn btn-secondary" href="{% url 'record:record_detail_next' object.category.pk %}">戻る</a>
+                    <a class="btn btn-secondary" href="{% url 'record:record_detail' %}">戻る</a>
                 </div>
             </form>
         </div>
