@@ -87,14 +87,18 @@ class RecordDetailView(LoginRequiredMixin, generic.ListView):
 
     def get(self, request, *args, **kwargs):
         category_list = Category.objects.filter(user=self.request.user)
+        sheet_list = Sheet.objects.filter(user=request.user)
         context = {
-            'category_list': category_list
+            'category_list': category_list,
+            'sheet_list': sheet_list,
         }
         return render(request, 'record_detail.html', context)
 
 def RecordDetailNextView(request, pk):
     record_list = Record.objects.filter(user=request.user, category=pk).order_by('-date')
-    context = {'record_list': record_list}
+    context = {
+        'record_list': record_list
+        }
     return render(request, 'record_detail_next.html', context)
 
 class RecordCreateView(LoginRequiredMixin, generic.CreateView):
@@ -172,6 +176,15 @@ class CategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
         messages.success(self.request, 'カテゴリーの更新に失敗しました')
         return super().form_invalid(form)
 
+class CategoryDeleteView(LoginRequiredMixin, generic.DeleteView):
+    model = Category
+    template_name = 'category_delete.html'
+    success_url = reverse_lazy('record:record_list')
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, 'カテゴリーを削除しました')
+        return super().delete(request, *args, **kwargs)
+
 class SheetCreateView(LoginRequiredMixin, generic.CreateView):
     model = Sheet
     template_name = 'sheet_create.html'
@@ -188,6 +201,31 @@ class SheetCreateView(LoginRequiredMixin, generic.CreateView):
     def form_invalid(self, form):
         messages.error(self.request, 'シートの作成に失敗しました')
         return super().form_invalid(form)
+
+class SheetUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Sheet
+    template_name = 'sheet_update.html'
+    form_class = SheetCreateForm
+
+    def get_success_url(self):
+        return reverse_lazy('record:record_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'シートを更新しました')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.success(self.request, 'シートの更新に失敗しました')
+        return super().form_invalid(form)
+
+class SheetDeleteView(LoginRequiredMixin, generic.DeleteView):
+    model = Sheet
+    template_name = 'sheet_delete.html'
+    success_url = reverse_lazy('record:record_list')
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, 'シートを削除しました')
+        return super().delete(request, *args, **kwargs)
 
 class Share(LoginRequiredMixin, generic.ListView):
     model = CustomUser
