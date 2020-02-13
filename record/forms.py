@@ -71,7 +71,7 @@ class CategoryCreateForm(forms.ModelForm):
 class SheetCreateForm(forms.ModelForm):
     class Meta:
         model = Sheet
-        fields = ('user', 'name')
+        fields = ('name',)
         widgets = {
             'name': forms.TextInput(attrs={'class': 'col-sm-8'}),
         }

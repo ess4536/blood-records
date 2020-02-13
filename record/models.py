@@ -19,7 +19,7 @@ class Category(models.Model):
     sheet = models.ForeignKey('Sheet', verbose_name="シート", on_delete=models.PROTECT)
     name = models.TextField(verbose_name="カテゴリー名", blank=True, max_length=30)
     description = models.TextField(verbose_name="説明", blank=True, null=True, max_length=50)
-    axis = models.TextField(verbose_name="軸変数", max_length=10)
+    axis = models.TextField(verbose_name="軸変数", max_length=10, blank=True, null=True)
     upper = models.FloatField(verbose_name="上限値", blank=True, null=True)
     lower = models.FloatField(verbose_name="下限値", blank=True, null=True)
     class Meta:

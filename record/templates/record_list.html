@@ -27,12 +27,10 @@
                     </div>
                 </form>
                 {% for user in object_list %}
-                    <div class="row">
+                    <div class="row mt-3">
                         {{ user.username }}
-                        <form action="{% url 'record:follow' user.username %}" method="post">
-                        {% csrf_token %}
-                            <input type="image" src="{% static 'img/star.svg' %}" alt="star" width="23" height="23">
-                        </form>
+                            <a class="ml-3 p-1 bg-light rounded" href="{% url 'record:follow' user.username %}">follow<a>
+                            <a class="ml-3 p-1 bg-light rounded" href="{% url 'record:unfollow' user.username %}">unfollow<a>
                     </div>
                 {% endfor %}
             </div>
@@ -110,11 +108,11 @@
                                 {
                                     label: '{{ cate.name }}',
                                     data: [
-                                        {% for record in queryset %}
+                                            {% for record in record %}
                                             {% if record.category.name == cate.name %}
-                                                {{ record.value }},
+                                                        {{ record.value }},
                                             {% endif %}
-                                        {% endfor %}
+                                            {% endfor %}
                                     ],
                                     {% if forloop.first %}
                                         borderColor: 'rgba(0, 128, 128, 0.5)',

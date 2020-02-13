@@ -21,5 +21,6 @@ urlpatterns = [
 #    path('share/', views.Share.as_view(), name="share"),
 #    path('share/<int:pk>/', views.ShareAccount.as_view(), name="share_account"),
     path('follow/<slug:username>/', views.FollowView, name="follow"),
+    path('unfollow/<slug:username>/', views.UnfollowView, name="unfollow"),
 ]
 

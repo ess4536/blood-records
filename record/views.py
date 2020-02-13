@@ -44,13 +44,14 @@ class RecordListView(LoginRequiredMixin, generic.ListView):
     template_name = 'record_list.html'
 
     def get(self, request, *args, **kwargs):
-        queryset = Record.objects.filter(user=self.request.user).order_by('date')
+        queryset = Record.objects.filter(user=self.request.user).order_by('category')
+        record = queryset.order_by('date')
         date = Record.objects.filter(user=self.request.user).values_list('date', flat=True).order_by('date').distinct()
         cate_list = Category.objects.filter(user=self.request.user)
         sheet_list = Sheet.objects.filter(user=self.request.user)
         relation_list = Relationship.objects.filter(user=self.request.user)
         follow = Relationship.objects.filter(user=self.request.user).values_list('follow',flat=True )
-        
+
         if follow:
             for follow in follow:
                 follow_record = Record.objects.filter(user=follow).order_by('date')
@@ -70,6 +71,7 @@ class RecordListView(LoginRequiredMixin, generic.ListView):
         
         context = {
             'queryset': queryset,
+            'record': record,
             'date': date,
             'cate_list': cate_list,
             'sheet_list': sheet_list,
@@ -271,5 +273,20 @@ def FollowView(request, *args, **kwargs):
             messages.success(request, 'フォローしました')
         else:
             messages.warning(request, 'すでにフォローしています')
+    return redirect('record:record_list')
 
+def UnfollowView(request, *args, **kwargs):
+    try:
+        user = CustomUser.objects.get(username=request.user)
+        follow = CustomUser.objects.get(username=kwargs['username'])
+        if user == follow:
+            messages.warning(request, '自分自身のフォローを外せません')
+        else:
+            unfollow = Relationship.objects.get(user=user, follow=follow)
+            unfollow.delete()
+            messages.success(request, 'あなたは{}のフォローを外しました'.format(user.username))
+    except CustomUser.DoesNotExist:
+        messages.warning(request, '{}は存在しません'.format(kwargs['username']))
+    except Relationship.DoesNotExist:
+        messages.warning(request, 'あなたは{0}をフォローしませんでした'.format(user.username))
     return redirect('record:record_list')
