@@ -49,8 +49,9 @@ class RecordListView(LoginRequiredMixin, generic.ListView):
         date = Record.objects.filter(user=self.request.user).values_list('date', flat=True).order_by('date').distinct()
         cate_list = Category.objects.filter(user=self.request.user)
         sheet_list = Sheet.objects.filter(user=self.request.user)
-        relation_list = Relationship.objects.filter(user=self.request.user)
-        follow = Relationship.objects.filter(user=self.request.user).values_list('follow',flat=True )
+        relation_list = Relationship.objects.filter(user=self.request.user, is_approval=True)
+        follow = Relationship.objects.filter(user=self.request.user).values_list('follow', flat=True )
+        follower = Relationship.objects.filter(follow=self.request.user, is_approval=False)
 
         if follow:
             for follow in follow:
@@ -76,10 +77,13 @@ class RecordListView(LoginRequiredMixin, generic.ListView):
             'cate_list': cate_list,
             'sheet_list': sheet_list,
             'relation_list': relation_list,
+            'follow': follow,
             'follow_record': follow_record,
             'follow_cate': follow_cate,
             'follow_date': follow_date,
+            'follower': follower,
             'object_list': object_list,
+
         }
         return render(request, 'record_list.html', context)
 
@@ -290,3 +294,15 @@ def UnfollowView(request, *args, **kwargs):
     except Relationship.DoesNotExist:
         messages.warning(request, 'あなたは{0}をフォローしませんでした'.format(user.username))
     return redirect('record:record_list')
+
+class ApprovalView(LoginRequiredMixin, generic.UpdateView):
+    model = CustomUser
+    template_name = 'record_list.html'
+
+    def get(self, *args, **kwargs):
+        user = CustomUser.objects.get(username=kwargs['username'])
+        follow = CustomUser.objects.get(username=self.request.user)
+        Relationship.objects.filter(user = user, follow = follow).update(
+            is_approval = True
+        )
+        return redirect('record:record_list')

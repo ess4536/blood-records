@@ -26,11 +26,17 @@
                         <input class="btn btn-primary" type="submit" value="検索">
                     </div>
                 </form>
+                {% for follower in follower %}
+                    <a class="btn-block p-1 bg-light rounded" href="{% url 'record:approval' follower.user %}">{{ follower.user }}からのフォローを承認する<a><br>
+                {% endfor %}
                 {% for user in object_list %}
                     <div class="row mt-3">
                         {{ user.username }}
-                            <a class="ml-3 p-1 bg-light rounded" href="{% url 'record:follow' user.username %}">follow<a>
-                            <a class="ml-3 p-1 bg-light rounded" href="{% url 'record:unfollow' user.username %}">unfollow<a>
+                        {% if user.id == follow %}
+                            <a class="ml-3 p-1 bg-light rounded" href="{% url 'record:unfollow' user.username %}">フォローを外す<a>
+                        {% else %}
+                            <a class="ml-3 p-1 bg-light rounded" href="{% url 'record:follow' user.username %}">フォローする<a>
+                        {% endif %}
                     </div>
                 {% endfor %}
             </div>

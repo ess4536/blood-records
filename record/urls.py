@@ -18,9 +18,8 @@ urlpatterns = [
     path('sheet-create/', views.SheetCreateView.as_view(), name="sheet_create"),
     path('sheet-update/<int:pk>', views.SheetUpdateView.as_view(), name="sheet_update"),
     path('sheet-delete/<int:pk>/', views.SheetDeleteView.as_view(), name="sheet_delete"),
-#    path('share/', views.Share.as_view(), name="share"),
-#    path('share/<int:pk>/', views.ShareAccount.as_view(), name="share_account"),
     path('follow/<slug:username>/', views.FollowView, name="follow"),
     path('unfollow/<slug:username>/', views.UnfollowView, name="unfollow"),
+    path('approval/<slug:username>/', views.ApprovalView.as_view(), name="approval"),
 ]
 
