@@ -33,7 +33,7 @@
                     <div class="row mt-3">
                         {{ user.username }}
                         {% if user.id == follow %}
-                            <a class="ml-3 p-1 bg-light rounded" href="{% url 'record:unfollow' user.username %}">フォローを外す<a>
+                            <a class="ml-3 p-1 bg-light rounded" href="{% url 'record:unfollow' user.username %}">フォロー解除<a>
                         {% else %}
                             <a class="ml-3 p-1 bg-light rounded" href="{% url 'record:follow' user.username %}">フォローする<a>
                         {% endif %}
