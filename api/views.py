@@ -1,14 +1,14 @@
 from django.shortcuts import render
 from django.http import Http404
-from django.views.decorators.csrf import csrf_exempt
-from record.models import Sheet
-from .serializers import SheetSerializer
+from record.models import Sheet, Category
+from .serializers import SheetSerializer, CategorySerializer
 from .permissions import IsOwnerOrReadOnly
 
-from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.decorators import api_view
 from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
 
 # Create your views here.
 
@@ -25,4 +25,13 @@ class SheetViewSet(viewsets.ModelViewSet):
     """
     queryset = Sheet.objects.all()
     serializer_class = SheetSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    """
+        This viewset automatically provides `list`, `create`, `retrieve`,
+        `update` and `destroy` actions.
+    """
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
