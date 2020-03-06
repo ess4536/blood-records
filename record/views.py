@@ -44,20 +44,20 @@ class RecordListView(LoginRequiredMixin, generic.ListView):
     template_name = 'record_list.html'
 
     def get(self, request, *args, **kwargs):
-        queryset = Record.objects.filter(user=self.request.user).order_by('category')
+        queryset = Record.objects.filter(username=self.request.user).order_by('category')
         record = queryset.order_by('date')
-        date = Record.objects.filter(user=self.request.user).values_list('date', flat=True).order_by('date').distinct()
-        cate_list = Category.objects.filter(user=self.request.user)
-        sheet_list = Sheet.objects.filter(user=self.request.user)
+        date = Record.objects.filter(username=self.request.user).values_list('date', flat=True).order_by('date').distinct()
+        cate_list = Category.objects.filter(username=self.request.user)
+        sheet_list = Sheet.objects.filter(username=self.request.user)
         relation_list = Relationship.objects.filter(user=self.request.user, is_approval=True)
         follow = Relationship.objects.filter(user=self.request.user).values_list('follow', flat=True )
         follower = Relationship.objects.filter(follow=self.request.user, is_approval=False)
 
         if follow:
             for follow in follow:
-                follow_record = Record.objects.filter(user=follow).order_by('date')
-                follow_cate = Category.objects.filter(user=follow)
-                follow_date = Record.objects.filter(user=follow).values_list('date', flat=True).order_by('date').distinct()
+                follow_record = Record.objects.filter(username=follow).order_by('date')
+                follow_cate = Category.objects.filter(username=follow)
+                follow_date = Record.objects.filter(username=follow).values_list('date', flat=True).order_by('date').distinct()
         else:
             follow_record = ""
             follow_cate = ""
@@ -92,8 +92,8 @@ class RecordDetailView(LoginRequiredMixin, generic.ListView):
     template_name = 'record_detail.html'
 
     def get(self, request, *args, **kwargs):
-        category_list = Category.objects.filter(user=self.request.user)
-        sheet_list = Sheet.objects.filter(user=request.user)
+        category_list = Category.objects.filter(username=self.request.user)
+        sheet_list = Sheet.objects.filter(username=request.user)
         context = {
             'category_list': category_list,
             'sheet_list': sheet_list,
@@ -101,7 +101,7 @@ class RecordDetailView(LoginRequiredMixin, generic.ListView):
         return render(request, 'record_detail.html', context)
 
 def RecordDetailNextView(request, pk):
-    record_list = Record.objects.filter(user=request.user, category=pk).order_by('-date')
+    record_list = Record.objects.filter(username=request.user, category=pk).order_by('-date')
     context = {
         'record_list': record_list
         }
@@ -115,7 +115,7 @@ class RecordCreateView(LoginRequiredMixin, generic.CreateView):
 
     def form_valid(self, form):
         record = form.save(commit=False)
-        record.user = self.request.user
+        record.username = self.request.user
         record.save()
         messages.success(self.request, '記録を作成しました')
         return super().form_valid(form)
@@ -157,7 +157,7 @@ class CategoryCreateView(LoginRequiredMixin, generic.CreateView):
 
     def form_valid(self, form):
         category = form.save(commit=False)
-        category.user = self.request.user
+        category.username = self.request.user
         category.save()
         messages.success(self.request, 'カテゴリを作成しました')
         return super().form_valid(form)
@@ -199,7 +199,7 @@ class SheetCreateView(LoginRequiredMixin, generic.CreateView):
 
     def form_valid(self, form):
         sheet = form.save(commit=False)
-        sheet.user = self.request.user
+        sheet.username = self.request.user
         sheet.save()
         messages.success(self.request, 'シートを作成しました')
         return super().form_valid(form)

@@ -27,6 +27,10 @@ class SheetViewSet(viewsets.ModelViewSet):
     serializer_class = SheetSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
+    def get_queryset(self):
+        queryset = Sheet.objects.filter(username=self.request.user)
+        return queryset
+
 class CategoryViewSet(viewsets.ModelViewSet):
     """
         This viewset automatically provides `list`, `create`, `retrieve`,
@@ -35,3 +39,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+    def get_queryset(self):
+        queryset = Category.objects.filter(username=self.request.user)
+        return queryset

@@ -5,8 +5,8 @@ from record.models import Sheet, Category
 class SheetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sheet
-        fields = ['id', 'name', 'user']
-        read_only_fields = ['user']
+        fields = ['id', 'name', 'username']
+#        read_only_fields = ['username']
 
         def create(self, validated_data):
 
@@ -20,8 +20,8 @@ class SheetSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', 'name', 'axis', 'upper', 'lower', 'description', 'sheet', 'user']
-        read_only_fields = ['user']
+        fields = ['id', 'name', 'axis', 'upper', 'lower', 'description', 'sheet', 'username']
+        read_only_fields = ['username']
 
         def create(self, validate_data):
             return Category.objects.create(**validate_data)
